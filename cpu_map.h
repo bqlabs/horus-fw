@@ -77,6 +77,65 @@
 
 #endif
 
+#ifdef CPU_MAP_ZUMSCAN // Arduino Uno + ZUM Scan board
+
+  // Define laser pulse output pins. NOTE: All laser pins must be on the same port.
+  #define LASER_DDR       DDRD
+  #define LASER_PORT      PORTD
+  #define LASER1_BIT      2  // Uno Digital Pin 2
+  #define LASER2_BIT      3  // Uno Digital Pin 3
+  #define LASER3_BIT      4  // Uno Digital Pin 4
+  #define LASER4_BIT      5  // Uno Digital Pin 5
+  #define LASER_MASK      ((1<<LASER1_BIT)|(1<<LASER2_BIT)|(1<<LASER3_BIT)|(1<<LASER4_BIT)) // All step bits
+
+  // Define serial port pins and interrupt vectors.
+  #define SERIAL_RX     USART_RX_vect
+  #define SERIAL_UDRE   USART_UDRE_vect
+
+  // Define step pulse output pins. NOTE: All step bit pins must be on the same port.
+  #define STEP_DDR        DDRB
+  #define STEP_PORT       PORTB
+  #define X_STEP_BIT      4  // Uno Digital Pin 12
+  #define Y_STEP_BIT      2  // Uno Digital Pin 10 rewired from 7
+  #define STEP_MASK       ((1<<X_STEP_BIT)|(1<<Y_STEP_BIT)) // All step bits
+
+  // Define step direction output pins. NOTE: All direction pins must be on the same port.
+  #define DIRECTION_DDR     DDRB
+  #define DIRECTION_PORT    PORTB
+  #define X_DIRECTION_BIT   5  // Uno Digital Pin 13
+  #define Y_DIRECTION_BIT   0  // Uno Digital Pin 8
+  #define DIRECTION_MASK    ((1<<X_DIRECTION_BIT)|(1<<Y_DIRECTION_BIT)) // All direction bits
+
+  // Define stepper driver enable/disable output pin.
+  #define STEPPERS_DISABLE_DDR    DDRB
+  #define STEPPERS_DISABLE_PORT   PORTB
+  #define STEPPERS_DISABLE_BIT    1  // Uno Digital Pin 9 + rewired pin 6
+  #define STEPPERS_DISABLE_MASK   (1<<STEPPERS_DISABLE_BIT)
+
+  // Define homing/hard limit switch input pins and limit interrupt vectors. 
+  // NOTE: All limit bit pins must be on the same port, but not on a port with other input pins (pinout).
+/*
+  #define LIMIT_DDR        DDRB
+  #define LIMIT_PIN        PINB
+  #define LIMIT_PORT       PORTB
+  #define X_LIMIT_BIT      1  // Uno Digital Pin 9
+  #define Y_LIMIT_BIT      2  // Uno Digital Pin 10
+  #define LIMIT_MASK       ((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)) // All limit bits
+  #define LIMIT_INT        PCIE0  // Pin change interrupt enable pin
+  #define LIMIT_INT_vect   PCINT0_vect 
+  #define LIMIT_PCMSK      PCMSK0 // Pin change interrupt register
+*/
+  // Define probe switch input pin.
+  #define PROBE_DDR       DDRC
+  #define PROBE_PIN       PINC
+  #define PROBE_PORT      PORTC
+  #define PROBE_BIT       5  // Uno Analog Pin 5
+  #define PROBE_MASK      (1<<PROBE_BIT)
+
+#endif
+
+//----------------------------------------------------------------------------------------
+
 #ifdef CPU_MAP_ATMEGA328P // (Arduino Uno) Officially supported by Grbl.
 
   // Define serial port pins and interrupt vectors.

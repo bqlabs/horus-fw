@@ -151,10 +151,10 @@ uint8_t gc_execute_line(char *line)
       case 'G':
         // Determine 'G' command and its modal group
         switch(int_value) {
-          case 1:
+          case 0: case 1:
             if (axis_command) { FAIL(STATUS_GCODE_AXIS_COMMAND_CONFLICT); } // [Axis word/command conflict]
             axis_command = AXIS_COMMAND_MOTION_MODE; 
-            gc_block.modal.motion = MOTION_MODE_LINEAR;
+            gc_block.modal.motion = int_value; // MOTION_MODE_LINEAR;
             word_bit = MODAL_GROUP_G1; 
             break;
           case 50:
@@ -205,8 +205,12 @@ uint8_t gc_execute_line(char *line)
           case 'F': word_bit = WORD_F; gc_block.values.f = value; break;
           case 'T': word_bit = WORD_T; gc_block.values.t = int_value; break; // gc.values.t = int_value;
           case 'X': word_bit = WORD_X; gc_block.values.xyz[X_AXIS] = value; axis_words |= (1<<X_AXIS); break;
-          /*case 'Y': word_bit = WORD_Y; gc_block.values.xyz[Y_AXIS] = value; axis_words |= (1<<Y_AXIS); break;
-          case 'Z': word_bit = WORD_Z; gc_block.values.xyz[Z_AXIS] = value; axis_words |= (1<<Z_AXIS); break;*/
+#ifdef Y_STEP_BIT
+          case 'Y': word_bit = WORD_Y; gc_block.values.xyz[Y_AXIS] = value; axis_words |= (1<<Y_AXIS); break;
+#endif
+#ifdef Z_STEP_BIT
+          case 'Z': word_bit = WORD_Z; gc_block.values.xyz[Z_AXIS] = value; axis_words |= (1<<Z_AXIS); break;
+#endif
           default: FAIL(STATUS_GCODE_UNSUPPORTED_COMMAND);
         } 
         
