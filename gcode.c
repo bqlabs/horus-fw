@@ -157,10 +157,18 @@ uint8_t gc_execute_line(char *line)
             gc_block.modal.motion = int_value; // MOTION_MODE_LINEAR;
             word_bit = MODAL_GROUP_G1; 
             break;
+
+          case 4: // G4 Dwell
+            word_bit = MODAL_GROUP_G0;
+            gc_block.non_modal_command = NON_MODAL_DWELL; 
+            break;
+
           case 50:
             gc_block.non_modal_command = NON_MODAL_RESET_POSITION;
             break;
-          default: FAIL(STATUS_GCODE_UNSUPPORTED_COMMAND); // [Unsupported G command]
+
+          default: 
+            FAIL(STATUS_GCODE_UNSUPPORTED_COMMAND); // [Unsupported G command]
         }  
         if (mantissa > 0) { FAIL(STATUS_GCODE_COMMAND_VALUE_NOT_INTEGER); } // [Unsupported or invalid Gxx.x command]
         // Check for more than one command per modal group violations in the current block
@@ -203,6 +211,8 @@ uint8_t gc_execute_line(char *line)
            words (I,J,K,L,P,R) have multiple connotations and/or depend on the issued commands. */
         switch(letter){
           case 'F': word_bit = WORD_F; gc_block.values.f = value; break;
+          case 'P': word_bit = WORD_P; gc_block.values.p = value; break;
+          case 'S': word_bit = WORD_S; gc_block.values.s = value; break;
           case 'T': word_bit = WORD_T; gc_block.values.t = int_value; break; // gc.values.t = int_value;
           case 'X': word_bit = WORD_X; gc_block.values.xyz[X_AXIS] = value; axis_words |= (1<<X_AXIS); break;
 #ifdef Y_STEP_BIT
