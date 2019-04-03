@@ -232,7 +232,7 @@ void mc_dwell(float seconds)
 }
 
 
-/*// Perform homing cycle to locate and set machine zero. Only '$H' executes this command.
+// Perform homing cycle to locate and set machine zero. Only '$H' executes this command.
 // NOTE: There should be no motions in the buffer and Grbl must be in an idle state before
 // executing the homing cycle. This prevents incorrect buffered plans after homing.
 void mc_homing_cycle()
@@ -267,7 +267,7 @@ void mc_homing_cycle()
 
   // If hard limits feature enabled, re-enable hard limits pin change register after homing cycle.
   limits_init();
-}*/
+}
 
 
 // Perform tool length probe cycle. Requires probe switch.

@@ -77,7 +77,7 @@
 
 #endif
 
-#ifdef CPU_MAP_ZUMSCAN // Arduino Uno + ZUM Scan board
+#ifdef CPU_MAP_ATMEGA328P_ZUMSCAN // Arduino Uno + ZUM Scan board
 
   // Define laser pulse output pins. NOTE: All laser pins must be on the same port.
   #define LASER_DDR       DDRD
@@ -114,17 +114,18 @@
 
   // Define homing/hard limit switch input pins and limit interrupt vectors. 
   // NOTE: All limit bit pins must be on the same port, but not on a port with other input pins (pinout).
-/*
+  // https://github.com/gnea/grbl/wiki/Wiring-Limit-Switches
+  
   #define LIMIT_DDR        DDRB
   #define LIMIT_PIN        PINB
   #define LIMIT_PORT       PORTB
-  #define X_LIMIT_BIT      1  // Uno Digital Pin 9
-  #define Y_LIMIT_BIT      2  // Uno Digital Pin 10
-  #define LIMIT_MASK       ((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)) // All limit bits
+//  #define X_LIMIT_BIT      1  // Uno Digital Pin 9
+  #define Y_LIMIT_BIT      3  // Uno Digital Pin 11
+  #define LIMIT_MASK       (1<<Y_LIMIT_BIT) //((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)) // All limit bits
   #define LIMIT_INT        PCIE0  // Pin change interrupt enable pin
-  #define LIMIT_INT_vect   PCINT0_vect 
+  #define LIMIT_INT_vect   PCINT0_vect // PCINT0_vect - D8 to D13 (Port B); PCINT1_vect - A0 to A5; PCINT2_vect - D0 to D7 (Port D)
   #define LIMIT_PCMSK      PCMSK0 // Pin change interrupt register
-*/
+
   // Define probe switch input pin.
   #define PROBE_DDR       DDRC
   #define PROBE_PIN       PINC
