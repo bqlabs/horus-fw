@@ -35,6 +35,7 @@
 #include "probe.h"
 #include "report.h"
 #include "ldr.h"
+#include "limits.h"
 
 // ----------- WAVGAT boards support ---------
 /* For WAVGAT boards the manufacturer/seller provide the URL to download board specific files
