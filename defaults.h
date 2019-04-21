@@ -34,9 +34,9 @@
 
 #ifdef DEFAULTS_HORUS
   // Grbl generic default settings. Should work across different machines.
-  #define DEFAULT_X_STEPS_PER_DEG 16*11 // /1.8 // step/deg
-  #define DEFAULT_Y_STEPS_PER_DEG 16*200/32 // /1.8 // step/deg
-  #define DEFAULT_Z_STEPS_PER_DEG 16/1.8 // step/deg
+  #define DEFAULT_X_STEPS_PER_DEG 16*11 // step/deg
+  #define DEFAULT_Y_STEPS_PER_DEG 16*200/32 // step/deg
+  #define DEFAULT_Z_STEPS_PER_DEG 16*200/360 // step/deg
   #define DEFAULT_X_MAX_RATE (180.0*60) // 180*60 deg/min = 180 deg/sec
   #define DEFAULT_Y_MAX_RATE (150.0*60) // 180*60 deg/min = 180 deg/sec
   #define DEFAULT_Z_MAX_RATE (180.0*60) // 180*60 deg/min = 180 deg/sec
