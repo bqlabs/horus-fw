@@ -35,7 +35,105 @@
 #include "probe.h"
 #include "report.h"
 #include "ldr.h"
+#include "limits.h"
 
+// ----------- WAVGAT boards support ---------
+/* For WAVGAT boards the manufacturer/seller provide the URL to download board specific files
+ *  after installing this files you can select the right board in Arduino IDE (WAVGAT UNO R3) and use it normally
+ *  
+ *  But to compile Horus-FW you should edit 
+ *  hardware\wavgat\WAV8F\cores\lgt8f\wiring.c 
+ *  and comment out (disable) following functions:
+ *  ISR(TIMER0_OVF_vect)
+ *  unsigned long millis()
+ *  unsigned long micros()
+ *  void delay(unsigned long ms)
+ */
+ 
+#if defined(ARDUINO_AVR_LARDU_328E)
+
+#include "lgtx8p.h"
+#define NO_TIM0
+
+#define  INT_OSC 0
+#define EXT_OSC 1
+
+
+
+void sysClock(uint8_t mode)
+{
+	if(mode == EXT_OSC) {
+		// enable external crystal
+		GPIOR0 = PMCR | 0x04;
+		PMCR = 0x80;
+		PMCR = GPIOR0;
+		
+		// waiting for crystal stable
+		delay(20);
+
+		// switch to external crystal
+		GPIOR0 = (PMCR & 0x9f) | 0x20;
+		PMCR = 0x80;
+		PMCR = GPIOR0;
+
+		// set to right prescale
+		CLKPR = 0x80;
+		CLKPR = 0x00;	
+	} else if(mode == INT_OSC) {
+		// prescaler settings
+		CLKPR = 0x80;
+		CLKPR = 0x01;	
+
+		// switch to internal crystal
+		GPIOR0 = PMCR & 0x9f;
+		PMCR = 0x80;
+		PMCR = GPIOR0;
+
+		// disable external crystal
+		GPIOR0 = PMCR & 0xfb;
+		PMCR = 0x80;
+		PMCR = GPIOR0;
+	}
+}	
+
+void lgt8fx8x_init()
+{
+#if defined(__LGT8FX8E__)
+// store ivref calibration 
+	GPIOR1 = VCAL1;
+	GPIOR2 = VCAL2;
+
+#if defined(__LGT8F_SSOP20__)
+	GPIOR0 = PMXCR | 0x07;
+	PMXCR = 0x80;
+	PMXCR = GPIOR0;
+#endif
+
+// enable 1KB E2PROM 
+	ECCR = 0x80;
+	ECCR = 0x40;
+
+// clock source settings
+	if((VDTCR & 0x0C) == 0x0C) {
+		// switch to external crystal
+		sysClock(EXT_OSC);
+	} else {
+		CLKPR = 0x80;
+		CLKPR = 0x01;
+	}
+#else
+	// enable 32KRC for WDT
+	GPIOR0 = PMCR | 0x10;
+	PMCR = 0x80;
+	PMCR = GPIOR0;
+
+	// clock scalar to 16MHz
+	CLKPR = 0x80;
+	CLKPR = 0x01;
+#endif
+}
+
+#endif
 
 // Declare system global variable structure
 system_t sys; 
@@ -43,6 +141,10 @@ system_t sys;
 
 int main(void)
 {
+#if defined(ARDUINO_AVR_LARDU_328E)
+    lgt8fx8x_init();
+#endif
+
   // Initialize system upon power-up.
   serial_init();   // Setup serial baud rate and interrupts
   settings_init(); // Load grbl settings from EEPROM
@@ -76,6 +178,7 @@ int main(void)
     serial_reset_read_buffer(); // Clear serial read buffer
     gc_init(); // Set g-code parser to default state
     laser_init();
+    limits_init();
     probe_init();
     plan_reset(); // Clear block buffer and planner variables
     st_reset(); // Clear stepper subsystem variables.
@@ -89,6 +192,7 @@ int main(void)
     sys.execute = 0;
     if (bit_istrue(settings.flags,BITFLAG_AUTO_START)) { sys.auto_start = true; }
     else { sys.auto_start = false; }
+//    sys.soft_limit = false;
           
     // Start Grbl main loop. Processes program inputs and executes them.
     protocol_main_loop();
